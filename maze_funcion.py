@@ -40,17 +40,17 @@ class Hero(Sprite):
             self.x -= self.SPEED
             if self.collidelist(wall_list) != -1:
                 self.x += self.SPEED
-            self.DIRECTIIN = False
+            self.DIRECTION = True
         elif self.MOVE["RIGHT"]and self.x < setting_win["WIDTH"] - self.width:
             self.x += self.SPEED
             if self.collidelist(wall_list) != -1:
                 self.x -= self.SPEED
-            self.DIRECTIIN = True
+            self.DIRECTION = False
             
         if self.MOVE["UP"] or self.MOVE["DOWN"] or self.MOVE["LEFT"] or self.MOVE["RIGHT"]:
             self.move_image()
         else:
-            self.IMAGE_NOW = self.IMAGE_LIST[1]
+            self.IMAGE = self.IMAGE_LIST[1]
 
         if self.DIRECTION:
             self.IMAGE_NOW = pygame.transform.flip(self.IMAGE, True, False)
@@ -80,20 +80,19 @@ class Bot(Sprite):
         self.check_hero(hero, self)
 
     def shoot(self, window, hero):
-        self.BULLET.x -= self.SPEED
-        if self.BULLET.collidelist(wall_list) != -1 or self.BULLET.x < 0 or self.BULLET.colliderect(hero):
+        self.BULLET.x += self.SPEED
+        if self.BULLET.collidelist(wall_list) != -1 or self.BULLET.x < 0 or self.BULLET.colliderect(hero) or self.BULLET.x > setting_win["WIDTH"]:
             self.check_hero(hero, self.BULLET)
-            self.BULLET.x -= self.x
+            self.BULLET.x = self.x
         pygame.draw.rect(window, (255,255,0), self.BULLET)
         self.move_image()
         window.blit(self.IMAGE_NOW, (self.x, self.y))
 
     def check_hero(self, hero, bot):
-
         if bot.colliderect(hero):
             hero.x, hero.y = 10, 10
             hero.HP -= 1
-            
+
 def create_wall(key):
     x, y = 0, 0
     index_x, index_y = 0, 0
@@ -109,7 +108,7 @@ def create_wall(key):
             if symb == "3":
                 for index in range(index_x, len(string)):
                     if maps[key][index_y][index] == "2":
-                        wall_list.append(pygame.Rect(x, y, width, (index - index_x) * width + width, width))
+                        wall_list.append(pygame.Rect(x, y, (index - index_x) * width + width, width))
                         break
             x += width
             index_x += 1
